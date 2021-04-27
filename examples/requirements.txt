@@ -1,0 +1,3 @@
+tqdm
+git+git://github.com/texty/prozorro_api@0.0.1#egg=prozorro_api
+
