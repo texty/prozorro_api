@@ -1,1 +1,1 @@
-from prozorro import *
+from .prozorro import *
