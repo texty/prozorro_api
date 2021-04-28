@@ -6,7 +6,7 @@ import functools
 API_URL = "https://public.api.openprocurement.org/api/2.5"
 
 
-@retry(Exception, tries=420, delay=15, backoff=1.5, max_delay=300)
+@retry(Exception, delay=15, backoff=1.2, max_delay=600)
 def _get_objects_page(name, offset):
     """
     Витягти одну сторінку планів (100 штук)
@@ -35,7 +35,7 @@ def _get_objects_gen(name, start_offset, end_offset):
         next_offset = next_page["offset"]
 
 
-@retry(Exception, tries=420, delay=15, backoff=1.5, max_delay=300)
+@retry(Exception, delay=15, backoff=1.2, max_delay=600)
 def _get_object(name, id):
     r = requests.get(f"{API_URL}/{name}/{id}", timeout=15)
     page = r.json()
