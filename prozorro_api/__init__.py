@@ -49,8 +49,8 @@ def _get_obj_by_def(o, name):
     return _get_object(name, o["id"])
 
 
-def get_objects_stream(name, start_offset, end_offset):
-    pool = mp.Pool(8)
+def get_objects_stream(name, start_offset, end_offset, concurrency=8):
+    pool = mp.Pool(concurrency)
 
     id_stream = _get_objects_gen(name, start_offset, end_offset)
     task = functools.partial(_get_obj_by_def, name=name)
