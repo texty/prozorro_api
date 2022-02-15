@@ -9,7 +9,7 @@ setuptools.setup(
     name='prozorro_api',
     license="MIT",
     description='prozorro_api is a wrapper package for interaction with a well-known Ukrainian procurement database',
-    version='v0.0.1',
+    version='v0.0.8',
     long_description=README,
     # url='',
     packages=setuptools.find_packages(),

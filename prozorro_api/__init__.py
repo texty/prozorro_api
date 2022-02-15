@@ -3,6 +3,7 @@ import multiprocessing as mp
 from retry import retry
 import functools
 import logging
+from utils import chunks
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
@@ -46,6 +47,12 @@ def _get_objects_gen(name, start_offset, end_offset):
 def _get_object(name, id):
     r = requests.get(f"{API_URL}/{name}/{id}", timeout=15)
     page = r.json()
+
+    # Будемо повертати None, якщо 404.
+    # В такому випадку там повідомлення про те, що об'єкт не знайдено, і робити retry не має сенсу
+    if r.status_code == 404:
+        return None
+
     return page["data"]
 
 
@@ -62,6 +69,19 @@ def get_objects_stream(name, start_offset, end_offset, concurrency=8):
     id_stream = _get_objects_gen(name, start_offset, end_offset)
     task = functools.partial(_get_obj_by_def, name=name)
 
-    yield from pool.imap(task, id_stream)
+    """
+    «Споживайте відповідально»:
+    
+    Тут ми додатково розіб'ємо потік айдішок на досить великі куски, щоб уникнути накопичення в оперативній 
+    пам'яті даних, які ніхто не споживає
+    
+    Коли один воркер забився (напр. в постійному ретраї), а інші побігли вперед і забивають оперативну пам'ять,
+    то їх результати накомичують в пам'яті і не можуть бути спожитими
+    
+    2000 - розмір чанку, він обмежує одночасну кількість результатів від воркерів у пам'яті (виходить ~~ 200Мб)
+    """
+    the_chunks = chunks(id_stream, 2000)
 
+    for chunk in the_chunks:
+        yield from pool.imap(task, list(chunk))
 
