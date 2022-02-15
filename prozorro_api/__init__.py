@@ -3,7 +3,7 @@ import multiprocessing as mp
 from retry import retry
 import functools
 import logging
-from utils import chunks
+from .utils import chunks
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
