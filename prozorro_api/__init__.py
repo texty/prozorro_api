@@ -2,6 +2,13 @@ import requests
 import multiprocessing as mp
 from retry import retry
 import functools
+import logging
+
+logging.basicConfig(
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=logging.WARNING,
+    datefmt='%Y-%m-%d %H:%M:%S')
+
 
 API_URL = "https://public.api.openprocurement.org/api/2.5"
 
